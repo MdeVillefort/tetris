@@ -6,21 +6,16 @@ import java.awt.Point;
 
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import assets.Tetromino.Shape;
+
 public class Tetromino {
 
+    private static final Logger logger = LoggerFactory.getLogger(Tetromino.class);
+
     public static final int WIDTH = 4;
-
-    private Point position;
-    private Shape shape;
-    private int angle;
-    private Color color = Color.green;
-
-    public Tetromino(Point position, Shape shape, int angle, Color color) {
-        this.position = position;
-        this.shape = shape;
-        this.angle = angle;
-        this.color = color;
-    }
 
     public static Tetromino randomTetromino() {
 
@@ -34,8 +29,53 @@ public class Tetromino {
         return new Tetromino(position, Shape.randomShape(), angle, color);
     }
 
-    public int rotate(int px, int py, int r) {
-        switch (r % 4) {
+    private Point position;
+    private Shape shape;
+    private int angle;
+    private Color color;
+
+    public Tetromino(Point position, Shape shape, int angle, Color color) {
+        this.position = position;
+        this.shape = shape;
+        this.angle = angle;
+        this.color = color;
+    }
+
+    public Tetromino(int x, int y) {
+        this(new Point(x, y), Shape.randomShape(), 0, Color.RED);
+    }
+
+    public Tetromino(int x) {
+        this(new Point(x, -WIDTH), Shape.randomShape(), 0, Color.RED);
+    }
+
+    public Point getPosition() {
+        return position;
+    }
+
+    public Shape getShape() {
+        return shape;
+    }
+
+    public int getAngle() {
+        return angle;
+    }
+
+    public void setAngle(int angle) {
+        this.angle = angle % 4;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public int getValue(int x, int y) {
+        int pi = rotate(x, y);
+        return shape.value[pi];
+    }
+
+    public int rotate(int px, int py) {
+        switch (angle % 4) {
             case 0: return py * WIDTH + px;             // 0 degrees
             case 1: return 12 + py - (px * WIDTH);      // 90 degrees
             case 2: return 15 - (py * WIDTH) - px;      // 180 degrees
@@ -51,9 +91,7 @@ public class Tetromino {
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < WIDTH; y++) {
 
-                int pi = rotate(x, y, angle);
-
-                if (this.shape.value[pi] == 1) {
+                if (getValue(x, y) == 1) {
                     g.fillRect((position.x + x) * GamePanel.TILE_SIZE,
                                (position.y + y) * GamePanel.TILE_SIZE,
                                GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
@@ -61,7 +99,23 @@ public class Tetromino {
 
             }
         }
+    }
 
+    public void translate(int dx, int dy) {
+        position.translate(dx, dy);
+    }
+
+    public boolean collidesWith(Tetromino tetromino) {
+
+        for (int x = 0; x < WIDTH; x++) {
+            for (int y = 0; y < WIDTH; y++) {
+                int fi_1 = (position.y + y) * GamePanel.COLUMNS + (position.x + x);
+                int fi_2 = (tetromino.getPosition().y + y) * GamePanel.COLUMNS + (tetromino.getPosition().x + x);
+                logger.info("fi_1 = " + fi_1 + ", fi_2 = " + fi_2);
+                if ((fi_1 == fi_2) && (getValue(x, y) + tetromino.getValue(x, y)) > 1) return true;
+            }
+        }
+        return false;
     }
 
     public enum Shape {
@@ -102,7 +156,7 @@ public class Tetromino {
             return shapes[PRNG.nextInt(shapes.length)];
         }
 
-        private int[] value = new int[16];
+        private final int[] value;
 
         Shape(int[] value) {
             this.value = value;
