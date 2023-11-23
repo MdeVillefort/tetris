@@ -21,21 +21,16 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static assets.Settings.*;
+
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private static final Logger logger = LoggerFactory.getLogger(GamePanel.class);
 
-    public static final int TILE_SIZE = 50;
-    public static final int ROWS = 20;
-    public static final int COLUMNS = 10;
-    private static final int DELAY = 250;
-
     private Timer timer;
     private Map<Integer, Boolean> keysPressed = new HashMap<>();
-    private Tetromino currentTetromino = new Tetromino(0, 0);
-    private Tetromino testTetromino = new Tetromino(COLUMNS / 2, ROWS / 2);
-    private List<Tetromino> placedTetrominos = new ArrayList<>();
-    private int[] field = new int[ROWS * COLUMNS];
+    private Tetromino tetromino = new Tetromino();
+    private Block[] field = new Block[ROWS * COLUMNS];
 
     {
         // Initialize the keyPressed mapping
@@ -45,10 +40,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         keysPressed.put(KeyEvent.VK_D, false);
         keysPressed.put(KeyEvent.VK_SPACE, false);
 
-        placedTetrominos.add(testTetromino);
-
-        updateField();
-
         // Create some random tetrominos for testing
         // for (int i = 0; i < 10; i++) {
         //     tetrominos.add(Tetromino.randomTetromino());
@@ -57,81 +48,46 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public GamePanel() {
 
-        setPreferredSize(new Dimension(TILE_SIZE * COLUMNS, TILE_SIZE * ROWS));
+        setPreferredSize(new Dimension(TILE_SIZE * COLUMNS,
+                                       TILE_SIZE * ROWS));
         setBackground(new Color(100, 100, 100));
 
         timer = new Timer(DELAY, this);
         timer.start();
     }
 
-    public boolean doesPieceFit(int dx, int dy) {
-
-        currentTetromino.translate(dx, dy);
-
-        for (Tetromino tetromino : placedTetrominos) {
-            if (currentTetromino.collidesWith(tetromino)) {
-                currentTetromino.translate(-dx, -dy);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public Tetromino createTetromino() {
-        return new Tetromino((int)(Math.random() * COLUMNS));
-    }
-
     public void draw_grid(Graphics g) {
 
             g.setColor(Color.BLACK);
 
-            for (int i = 0; i < COLUMNS; i++) {
+            for (int i = 0; i < Settings.COLUMNS; i++) {
                 for (int j = 0; j < ROWS; j++) {
                     g.drawRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
             }
     }
 
-    public void updateField() {
-        Arrays.fill(field, 0);
-        List<Tetromino> allTetrominos = new ArrayList<>(placedTetrominos);
-        allTetrominos.add(currentTetromino);
-        for (Tetromino tetromino : allTetrominos) {
-            Point pos = tetromino.getPosition();
-            for (int x = 0; x < Tetromino.WIDTH; x++) {
-                for (int y = 0; y < Tetromino.WIDTH; y++) {
-                    int fi = (pos.y + y) * COLUMNS + (pos.x + x);
-                    if ((pos.x + x) >=0 && (pos.x + x) < COLUMNS &&
-                        (pos.y + y) >= 0 && (pos.y + y) < ROWS) {
-                        field[fi] = tetromino.getValue(x, y);
-                    }
-                }
-            }
-        }
-    }
-
     public void update() {
 
-        if (keysPressed.get(KeyEvent.VK_W)) {
-            if (doesPieceFit(0, -1))
-                currentTetromino.translate(0, -1);
-        }
+        tetromino.update();
+        
+    }
+
+    public void control() {
+
         if (keysPressed.get(KeyEvent.VK_A)) {
-            if (doesPieceFit(-1, 0))
-                currentTetromino.translate(-1, 0);
+            tetromino.move("left");
         }
         if (keysPressed.get(KeyEvent.VK_S)) {
-            if (doesPieceFit(0, 1))
-                currentTetromino.translate(0, 1);
+            tetromino.move("right");
         }
         if (keysPressed.get(KeyEvent.VK_D)) {
-            if (doesPieceFit(1, 0))
-                currentTetromino.translate(1, 0);
+            tetromino.move("down");
         }
         if (keysPressed.get(KeyEvent.VK_SPACE)) {
-            currentTetromino.setAngle(currentTetromino.getAngle() + 1);
+            // rotate tetromino
         }
-        
+
     }
 
     @Override
@@ -145,12 +101,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
 
         draw_grid(g);
-
-        currentTetromino.draw(g);
-
-        for (Tetromino tetromino : placedTetrominos) {
-            tetromino.draw(g);
-        }
+        tetromino.draw(g);
     }
 
     @Override
