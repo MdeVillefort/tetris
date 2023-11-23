@@ -57,9 +57,6 @@ public class Tetromino {
 
     public void update() {
         move("down");
-        for (Block block : blocks) {
-            block.update();
-        }
     }
 
     public void move(String direction) {

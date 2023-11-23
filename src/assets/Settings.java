@@ -10,9 +10,10 @@ public class Settings {
     public static final int TILE_SIZE = 50;
     public static final int ROWS = 20;
     public static final int COLUMNS = 10;
-    public static final int DELAY = 250;
+    public static final int DELAY = 16; // ms
+    public static final int ANIM_TIME_INTERVAL = 150_000_000; // ns
     public static final int WIDTH = 4;
-    public static final int[] INIT_POS_OFFSET = new int[] {COLUMNS / 2, 0};
+    public static final int[] INIT_POS_OFFSET = {COLUMNS / 2, 0};
     public static final Map<String, int[]> MOVE_DIRECTIONS;
 
     static {

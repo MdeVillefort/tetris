@@ -31,10 +31,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Map<Integer, Boolean> keysPressed = new HashMap<>();
     private Tetromino tetromino = new Tetromino();
     private Block[] field = new Block[ROWS * COLUMNS];
+    private long lastFrameTime = System.nanoTime();
 
     {
         // Initialize the keyPressed mapping
-        keysPressed.put(KeyEvent.VK_W, false);
         keysPressed.put(KeyEvent.VK_A, false);
         keysPressed.put(KeyEvent.VK_S, false);
         keysPressed.put(KeyEvent.VK_D, false);
@@ -69,11 +69,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public void update() {
 
-        tetromino.update();
+        // Check if ready to update block positions
+        long currentTime = System.nanoTime();
+        if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL) {
+            tetromino.update();
+            lastFrameTime = currentTime;
+        }
         
     }
 
-    public void control() {
+    public void check_events() {
+        // check for events?
+    }
+
+    public void control(int keyPressed) {
 
         if (keysPressed.get(KeyEvent.VK_A)) {
             tetromino.move("left");
