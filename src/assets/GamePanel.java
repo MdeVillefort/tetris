@@ -7,16 +7,9 @@ import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,23 +21,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private static final Logger logger = LoggerFactory.getLogger(GamePanel.class);
 
     private Timer timer;
-    private Map<Integer, Boolean> keysPressed = new HashMap<>();
     private Tetromino tetromino = new Tetromino();
-    private Block[] field = new Block[ROWS * COLUMNS];
+    private Block[][] field = new Block[ROWS][COLUMNS];
     private long lastFrameTime = System.nanoTime();
-
-    {
-        // Initialize the keyPressed mapping
-        keysPressed.put(KeyEvent.VK_A, false);
-        keysPressed.put(KeyEvent.VK_S, false);
-        keysPressed.put(KeyEvent.VK_D, false);
-        keysPressed.put(KeyEvent.VK_SPACE, false);
-
-        // Create some random tetrominos for testing
-        // for (int i = 0; i < 10; i++) {
-        //     tetrominos.add(Tetromino.randomTetromino());
-        // }
-    }
 
     public GamePanel() {
 
@@ -69,32 +48,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public void update() {
 
-        // Check if ready to update block positions
+        // Check if ready to update block vertical position
         long currentTime = System.nanoTime();
         if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL) {
             tetromino.update();
             lastFrameTime = currentTime;
-        }
-        
-    }
-
-    public void check_events() {
-        // check for events?
-    }
-
-    public void control(int keyPressed) {
-
-        if (keysPressed.get(KeyEvent.VK_A)) {
-            tetromino.move("left");
-        }
-        if (keysPressed.get(KeyEvent.VK_S)) {
-            tetromino.move("right");
-        }
-        if (keysPressed.get(KeyEvent.VK_D)) {
-            tetromino.move("down");
-        }
-        if (keysPressed.get(KeyEvent.VK_SPACE)) {
-            // rotate tetromino
         }
 
     }
@@ -121,12 +79,19 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        keysPressed.replace(key, true);
+        if (key == KeyEvent.VK_A) {
+            tetromino.move("left");
+        }
+        if (key == KeyEvent.VK_D) {
+            tetromino.move("right");
+        }
+        if (key == KeyEvent.VK_SPACE) {
+            // rotate tetromino
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        int key = e.getKeyCode();
-        keysPressed.replace(key, false);
+        // this is not used but must be defined as part of the KeyListener interface
     }
 }

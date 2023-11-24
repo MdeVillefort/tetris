@@ -7,6 +7,8 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+
 import static assets.Settings.*;
 
 public class Tetromino {
@@ -28,6 +30,7 @@ public class Tetromino {
     private Shape shape;
     private Block[] blocks = new Block[4];
     private Color color = Color.RED;
+    private boolean isLanded = false;
 
     public Tetromino(Shape shape) {
         this.shape = shape;
@@ -61,19 +64,21 @@ public class Tetromino {
 
     public void move(String direction) {
         direction = direction.toLowerCase();
-        int[] move_direction = MOVE_DIRECTIONS.get(direction);
-        if (move_direction == null) {
+        int[] moveDirection = MOVE_DIRECTIONS.get(direction);
+        if (moveDirection == null) {
             logger.warn("Move direction " + direction + " is not valid.");
             return;
         }
-        for (Block block : blocks) {
-            block.move(move_direction);
+        if (fits(moveDirection)) {
+            for (Block block : blocks) {
+                block.move(moveDirection);
+            }
         }
     }
 
-    public boolean collidesWith(Tetromino tetromino) {
-
-        return false;
+    public boolean fits(final int[] moveDirection) {
+        return Arrays.stream(blocks)
+                     .allMatch(block -> block.fits(moveDirection));
     }
 
     public enum Shape {
