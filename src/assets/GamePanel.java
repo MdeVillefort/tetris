@@ -67,7 +67,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             // Add blocks to field and create a new tetromino
             for (Block block : tetromino.getBlocks()) {
                 int[] pos = block.getPosition();
-                field[pos[1]][pos[0]] = block;
+                // Ignore blocks that fall outside field
+                if (0 <= pos[0] && pos[0] < COLUMNS &&
+                    0 <= pos[1] && pos[1] < ROWS) {
+                    field[pos[1]][pos[0]] = block;
+                }
             }
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
