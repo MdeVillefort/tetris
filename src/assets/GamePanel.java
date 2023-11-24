@@ -21,7 +21,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private static final Logger logger = Logger.getLogger("assets.GamePanel");
 
     private Timer timer;
-    private Tetromino tetromino = new Tetromino();
+    private Tetromino tetromino = new Tetromino(this);
     private Block[][] field = new Block[ROWS][COLUMNS];
     private long lastFrameTime = System.nanoTime();
 
@@ -33,6 +33,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         timer = new Timer(DELAY, this);
         timer.start();
+    }
+
+    public Block[][] getField() {
+        return field;
     }
 
     public void draw_grid(Graphics g) {
@@ -67,7 +71,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
-            tetromino = new Tetromino();
+            tetromino = new Tetromino(this);
         }
     }
 

@@ -40,8 +40,10 @@ public class Block {
     }
 
     public boolean fits(int[] direction) {
-        int[] newPosition = {position[0] + direction[0], position[1] + direction[1]};
-        if ((0 <= newPosition[0] && newPosition[0] < COLUMNS && newPosition[1] < ROWS)) {
+        int x = position[0] + direction[0];
+        int y = position[1] + direction[1];
+        if ((0 <= x && x < COLUMNS && y < ROWS) &&
+            (y < 0 || tetromino.getPanel().getField()[y][x] == null)) {
             return true;
         }
         return false;

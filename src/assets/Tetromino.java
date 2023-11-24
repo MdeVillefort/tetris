@@ -14,7 +14,7 @@ public class Tetromino {
 
     private static final Logger logger = Logger.getLogger("assets.Tetromiono");
 
-    public static Tetromino randomTetromino() {
+    public static Tetromino randomTetromino(GamePanel panel) {
 
         Random random = new Random();
         Point position = new Point(random.nextInt(Settings.COLUMNS),
@@ -23,15 +23,17 @@ public class Tetromino {
         Color color = new Color(random.nextInt(255),
                                 random.nextInt(255),
                                 random.nextInt(255));
-        return new Tetromino(Shape.randomShape());
+        return new Tetromino(panel, Shape.randomShape());
     }
 
+    private GamePanel panel;
     private Shape shape;
     private Block[] blocks = new Block[4];
     private Color color = Color.RED;
     private boolean isLanded = false;
 
-    public Tetromino(Shape shape) {
+    public Tetromino(GamePanel panel, Shape shape) {
+        this.panel = panel;
         this.shape = shape;
         int[][] coordinates = this.shape.getCoordinates();
         for (int i = 0; i < blocks.length; i++) {
@@ -41,8 +43,8 @@ public class Tetromino {
                     " tetromino created at " + Arrays.deepToString(getBlockPositions()));
     }
 
-    public Tetromino() {
-        this(Shape.randomShape());
+    public Tetromino(GamePanel panel) {
+        this(panel, Shape.randomShape());
     }
 
     public Shape getShape() {
@@ -59,6 +61,10 @@ public class Tetromino {
             blockPositions[i] = blocks[i].getPosition();
         }
         return blockPositions;
+    }
+
+    public GamePanel getPanel() {
+        return panel;
     }
 
     public boolean landed() {
