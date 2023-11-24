@@ -4,16 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Random;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import static assets.Settings.*;
 
 public class Tetromino {
 
-    private static final Logger logger = LoggerFactory.getLogger(Tetromino.class);
+    private static final Logger logger = Logger.getLogger("assets.Tetromiono");
 
     public static Tetromino randomTetromino() {
 
@@ -48,6 +46,14 @@ public class Tetromino {
         return shape;
     }
 
+    public Block[] getBlocks() {
+        return blocks;
+    }
+
+    public boolean landed() {
+        return isLanded;
+    }
+
     public void draw(Graphics g) {
         
         g.setColor(color);
@@ -66,13 +72,15 @@ public class Tetromino {
         direction = direction.toLowerCase();
         int[] moveDirection = MOVE_DIRECTIONS.get(direction);
         if (moveDirection == null) {
-            logger.warn("Move direction " + direction + " is not valid.");
+            logger.warning("Move direction " + direction + " is not valid.");
             return;
         }
         if (fits(moveDirection)) {
             for (Block block : blocks) {
                 block.move(moveDirection);
             }
+        } else if (direction == "down") {
+            isLanded = true;
         }
     }
 

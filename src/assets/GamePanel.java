@@ -11,14 +11,15 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.Arrays;
 
 import static assets.Settings.*;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(GamePanel.class);
+    private static final Logger logger = Logger.getLogger("assets.GamePanel");
 
     private Timer timer;
     private Tetromino tetromino = new Tetromino();
@@ -48,13 +49,26 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public void update() {
 
-        // Check if ready to update block vertical position
+        // Check if ready to update tetromino vertical position
         long currentTime = System.nanoTime();
         if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL) {
             tetromino.update();
+            checkTetrominoLanding();
             lastFrameTime = currentTime;
         }
 
+    }
+
+    public void checkTetrominoLanding() {
+        if (tetromino.landed()) {
+            // Add blocks to field and create a new tetromino
+            for (Block block : tetromino.getBlocks()) {
+                int[] pos = block.getPosition();
+                logger.fine(Arrays.toString(pos));
+                field[pos[1]][pos[0]] = block;
+            }
+            tetromino = new Tetromino();
+        }
     }
 
     @Override
@@ -69,6 +83,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         draw_grid(g);
         tetromino.draw(g);
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
+                Block block = field[i][j];
+                if (block != null) {
+                    block.draw(g);
+                }
+            }
+        }
     }
 
     @Override

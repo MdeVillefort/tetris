@@ -3,12 +3,11 @@ import assets.GamePanel;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Logger;
 
 public class Tetris {
 
-    private static final Logger logger = LoggerFactory.getLogger(Tetris.class);
+    private static final Logger logger = Logger.getLogger("assets.Tetris");
 
     private static void initWindow() {
         
