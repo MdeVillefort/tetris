@@ -3,6 +3,7 @@ package assets;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+
 import java.util.Random;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -36,6 +37,8 @@ public class Tetromino {
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = new Block(this, coordinates[i]);
         }
+        logger.fine("New " + this.shape.name() +
+                    " tetromino created at " + Arrays.deepToString(getBlockPositions()));
     }
 
     public Tetromino() {
@@ -48,6 +51,14 @@ public class Tetromino {
 
     public Block[] getBlocks() {
         return blocks;
+    }
+
+    public int[][] getBlockPositions() {
+        int[][] blockPositions = new int[blocks.length][];
+        for (int i = 0; i < blocks.length; i++) {
+            blockPositions[i] = blocks[i].getPosition();
+        }
+        return blockPositions;
     }
 
     public boolean landed() {
@@ -113,7 +124,9 @@ public class Tetromino {
         }
 
         public int[][] getCoordinates() {
-            return coordinates;
+            return Arrays.stream(coordinates)
+                         .map(int[]::clone)
+                         .toArray(int[][]::new);
         }
     }
 }

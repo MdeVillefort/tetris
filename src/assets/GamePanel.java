@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.Arrays;
 
 import static assets.Settings.*;
@@ -64,9 +63,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             // Add blocks to field and create a new tetromino
             for (Block block : tetromino.getBlocks()) {
                 int[] pos = block.getPosition();
-                logger.fine(Arrays.toString(pos));
                 field[pos[1]][pos[0]] = block;
             }
+            logger.fine(tetromino.getShape().name() + " tetromino landed at " +
+                        Arrays.deepToString(tetromino.getBlockPositions()));
             tetromino = new Tetromino();
         }
     }
