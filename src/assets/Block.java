@@ -46,8 +46,9 @@ public class Block {
     }
 
     public void draw(Graphics g) {
-        g.fillRect(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
-                   TILE_SIZE, TILE_SIZE);
+        g.fillRoundRect(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
+                        TILE_SIZE, TILE_SIZE,
+                        16, 16);
     }
 
     public boolean fits(int[] newPosition) {
