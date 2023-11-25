@@ -101,6 +101,10 @@ public class Tetromino {
         }
     }
 
+    public void rotate() {
+        
+    }
+
     public boolean fits(final int[] moveDirection) {
         return Arrays.stream(blocks)
                      .allMatch(block -> block.fits(moveDirection));

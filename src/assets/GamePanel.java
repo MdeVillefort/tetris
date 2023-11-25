@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -20,19 +21,22 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     private static final Logger logger = Logger.getLogger("assets.GamePanel");
 
+    private JFrame window;
     private Timer timer;
     private Tetromino tetromino = new Tetromino(this);
     private Block[][] field = new Block[ROWS][COLUMNS];
     private long lastFrameTime = System.nanoTime();
 
-    public GamePanel() {
+    public GamePanel(JFrame window) {
 
         setPreferredSize(new Dimension(TILE_SIZE * COLUMNS,
                                        TILE_SIZE * ROWS));
         setBackground(new Color(100, 100, 100));
 
-        timer = new Timer(DELAY, this);
-        timer.start();
+        this.window = window;
+
+        this.timer = new Timer(DELAY, this);
+        this.timer.start();
     }
 
     public Block[][] getField() {
@@ -116,7 +120,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             tetromino.move("right");
         }
         if (key == KeyEvent.VK_SPACE) {
-            // rotate tetromino
+            tetromino.rotate();
+        }
+        if (key == KeyEvent.VK_ESCAPE) {
+            this.window.dispose();
+            System.exit(0);
         }
     }
 

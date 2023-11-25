@@ -3,7 +3,7 @@ package assets;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Settings {
+public final class Settings {
 
     private Settings() {}
 

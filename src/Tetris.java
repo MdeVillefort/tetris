@@ -15,7 +15,7 @@ public class Tetris {
         
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        GamePanel panel = new GamePanel();
+        GamePanel panel = new GamePanel(window);
         window.add(panel);
         window.addKeyListener(panel);
 
