@@ -92,7 +92,15 @@ public class Tetromino {
             logger.warning("Move direction " + direction + " is not valid.");
             return;
         }
-        if (fits(moveDirection)) {
+
+        // Need new block positions calculated here and passed to fits
+        int[][] newBlockPositions = Arrays.stream(getBlockPositions())
+                                          .map(int[]::clone)
+                                          .map(pos -> new int[] {pos[0] + moveDirection[0],
+                                                                 pos[1] + moveDirection[1]})
+                                          .toArray(int[][]::new);
+
+        if (fits(newBlockPositions)) {
             for (Block block : blocks) {
                 block.move(moveDirection);
             }
@@ -102,12 +110,16 @@ public class Tetromino {
     }
 
     public void rotate() {
-        
+
     }
 
-    public boolean fits(final int[] moveDirection) {
-        return Arrays.stream(blocks)
-                     .allMatch(block -> block.fits(moveDirection));
+    public boolean fits(final int[][] newBlockPositions) {
+        for (int i = 0; i < blocks.length; i++) {
+            if (!blocks[i].fits(newBlockPositions[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public enum Shape {

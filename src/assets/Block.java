@@ -39,9 +39,9 @@ public class Block {
                    TILE_SIZE, TILE_SIZE);
     }
 
-    public boolean fits(int[] direction) {
-        int x = position[0] + direction[0];
-        int y = position[1] + direction[1];
+    public boolean fits(int[] newPosition) {
+        int x = newPosition[0];
+        int y = newPosition[1];
         if ((0 <= x && x < COLUMNS && y < ROWS) &&
             (y < 0 || tetromino.getPanel().getField()[y][x] == null)) {
             return true;
