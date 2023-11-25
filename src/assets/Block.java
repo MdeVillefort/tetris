@@ -22,6 +22,13 @@ public class Block {
         return position;
     }
 
+    public void setPosition(int[] newPosition) {
+        for (int i = 0; i < position.length; i++) {
+            position[i] = newPosition[i];
+        }
+        update();
+    }
+
     public void update() {
         topLeftCoordsPixels[0] = position[0] * TILE_SIZE;
         topLeftCoordsPixels[1] = position[1] * TILE_SIZE;
@@ -32,6 +39,10 @@ public class Block {
         position[0] += direction[0];
         position[1] += direction[1];
         update();
+    }
+
+    public void rotate() {
+
     }
 
     public void draw(Graphics g) {

@@ -93,16 +93,15 @@ public class Tetromino {
             return;
         }
 
-        // Need new block positions calculated here and passed to fits
+        // Need new block positions calculated here and passed to fits.
         int[][] newBlockPositions = Arrays.stream(getBlockPositions())
-                                          .map(int[]::clone)
                                           .map(pos -> new int[] {pos[0] + moveDirection[0],
                                                                  pos[1] + moveDirection[1]})
                                           .toArray(int[][]::new);
 
         if (fits(newBlockPositions)) {
-            for (Block block : blocks) {
-                block.move(moveDirection);
+            for (int i = 0; i < blocks.length; i++) {
+                blocks[i].setPosition(newBlockPositions[i]);
             }
         } else if (direction == "down") {
             isLanded = true;
@@ -110,6 +109,33 @@ public class Tetromino {
     }
 
     public void rotate() {
+
+        // Need new block positions calcualted here and pass to fits.
+        // Use simple rotation matrix to perform rotation.
+        int[] pivotPoint = getBlockPositions()[0];
+        int[][] newBlockPositions = Arrays.stream(getBlockPositions())
+                                          .map(int[]::clone)
+                                          .toArray(int[][]::new);
+
+        for (int[] blockPosition : newBlockPositions) {
+
+            blockPosition[0] -= pivotPoint[0];
+            blockPosition[1] -= pivotPoint[1];
+            
+            int[] temp = Arrays.copyOf(blockPosition, blockPosition.length);
+
+            blockPosition[0] = -temp[1];
+            blockPosition[1] = temp[0];
+
+            blockPosition[0] += pivotPoint[0];
+            blockPosition[1] += pivotPoint[1];
+        }
+
+        if (fits(newBlockPositions)) {
+            for (int i = 0; i < blocks.length; i++) {
+                blocks[i].setPosition(newBlockPositions[i]);
+            }
+        }
 
     }
 
