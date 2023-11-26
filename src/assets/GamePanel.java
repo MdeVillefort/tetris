@@ -61,8 +61,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL) {
             tetromino.update();
             checkTetrominoLanding();
+            checkFullLines();
             lastFrameTime = currentTime;
         }
+
+    }
+
+    public void checkFullLines() {
 
     }
 
