@@ -1,5 +1,6 @@
 package assets;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 import static assets.Settings.*;
@@ -9,6 +10,7 @@ public class Block {
     private Tetromino tetromino;
     private int[] position = new int[2];
     private int[] topLeftCoordsPixels = new int[2];
+    private boolean inLine = false;
 
     public Block(Tetromino tetromino, int[] position) {
         this.tetromino = tetromino;
@@ -26,26 +28,37 @@ public class Block {
         for (int i = 0; i < position.length; i++) {
             position[i] = newPosition[i];
         }
-        update();
+        setRectPosition();
+    }
+
+    private void setRectPosition() {
+        topLeftCoordsPixels[0] = position[0] * TILE_SIZE;
+        topLeftCoordsPixels[1] = position[1] * TILE_SIZE;
+    }
+
+    public boolean isInLine() {
+        return inLine;
+    }
+
+    public void setInLine(boolean inLine) {
+        this.inLine = inLine;
     }
 
     public void update() {
-        topLeftCoordsPixels[0] = position[0] * TILE_SIZE;
-        topLeftCoordsPixels[1] = position[1] * TILE_SIZE;
+        setRectPosition();
     }
     
 
     public void move(int[] direction) {
         position[0] += direction[0];
         position[1] += direction[1];
-        update();
-    }
-
-    public void rotate() {
-
+        setRectPosition();
     }
 
     public void draw(Graphics g) {
+        if (inLine)
+            g.setColor(Color.GREEN);
+
         g.fillRoundRect(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
                         TILE_SIZE, TILE_SIZE,
                         16, 16);

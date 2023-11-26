@@ -14,6 +14,7 @@ import javax.swing.Timer;
 
 import java.util.logging.Logger;
 import java.util.Arrays;
+import java.util.ArrayDeque;
 
 import static assets.Settings.*;
 
@@ -25,6 +26,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private Tetromino tetromino = new Tetromino(this);
     private Block[][] field = new Block[ROWS][COLUMNS];
+    private ArrayDeque<Integer> lines = new ArrayDeque<>();
     private long lastFrameTime = System.nanoTime();
 
     public GamePanel(JFrame window) {
@@ -47,7 +49,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
             g.setColor(Color.BLACK);
 
-            for (int i = 0; i < Settings.COLUMNS; i++) {
+            for (int i = 0; i < COLUMNS; i++) {
                 for (int j = 0; j < ROWS; j++) {
                     g.drawRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
@@ -56,18 +58,67 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public void update() {
 
-        // Check if ready to update tetromino vertical position
+        // Check if ready to update tetromino vertical paaaosition
         long currentTime = System.nanoTime();
-        if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL) {
+        long extraTime = lines.isEmpty() ? 0 : 250_000_000;
+
+        if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL + extraTime) {
+            clearFullLines();
             tetromino.update();
             checkTetrominoLanding();
-            checkFullLines();
             lastFrameTime = currentTime;
         }
 
     }
 
+    public void clearFullLines() {
+
+        // Remove any full lines
+        // Move blocks above down as needed
+
+        while (!lines.isEmpty()) {
+            int line = lines.pop();
+            for (int x = 0; x < COLUMNS; x++) {
+                field[line][x] = null;
+            }
+            for (int y = line - 1; y >= 0; y--) {
+                for (int x = 0; x < COLUMNS; x++) {
+                    Block block = field[y][x];
+                    if (block != null) {
+                        block.move(MOVE_DIRECTIONS.get("down"));
+                        field[y+1][x] = block;
+                        field[y][x] = null;
+                    }
+                }
+            }
+        }
+
+        logger.fine("Curent Field Array: \n" + Arrays.deepToString(field));
+
+    }
+
     public void checkFullLines() {
+
+        // Show blocks in field that complete a line
+        // Only check lines occupied by current tetromino
+
+        int[][] blockPositions = tetromino.getBlockPositions();
+        Integer[] yValues = Arrays.stream(blockPositions)
+                                  .map(pos -> pos[1])
+                                  .distinct()
+                                  .toArray(Integer[]::new);
+
+        for (Integer yValue : yValues) {
+            int y = yValue.intValue();
+            boolean isLine = Arrays.stream(field[y])
+                                   .allMatch(p -> p != null);
+            if (isLine) {
+                lines.push(y);
+                for (int x = 0; x < COLUMNS; x++) {
+                    field[y][x].setInLine(isLine);
+                }
+            }
+        }
 
     }
 
@@ -84,6 +135,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
+            checkFullLines();
             tetromino = new Tetromino(this);
         }
     }
@@ -100,6 +152,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         draw_grid(g);
         tetromino.draw(g);
+
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
                 Block block = field[i][j];

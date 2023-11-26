@@ -2,7 +2,6 @@ package assets;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 
 import java.util.Random;
 import java.util.Arrays;
@@ -13,18 +12,6 @@ import static assets.Settings.*;
 public class Tetromino {
 
     private static final Logger logger = Logger.getLogger("assets.Tetromiono");
-
-    public static Tetromino randomTetromino(GamePanel panel) {
-
-        Random random = new Random();
-        Point position = new Point(random.nextInt(Settings.COLUMNS),
-                                   random.nextInt(Settings.ROWS));
-        int angle = random.nextInt(4);
-        Color color = new Color(random.nextInt(255),
-                                random.nextInt(255),
-                                random.nextInt(255));
-        return new Tetromino(panel, Shape.randomShape());
-    }
 
     private GamePanel panel;
     private Shape shape;
@@ -61,6 +48,14 @@ public class Tetromino {
             blockPositions[i] = blocks[i].getPosition();
         }
         return blockPositions;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public GamePanel getPanel() {
