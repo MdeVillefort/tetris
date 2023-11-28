@@ -67,7 +67,7 @@ public class Tetromino {
     }
 
     public void draw(Graphics g) {
-        
+
         g.setColor(color);
 
         for (Block block : blocks) {

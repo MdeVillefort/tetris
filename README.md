@@ -10,4 +10,5 @@ A simple clone of tetris using Java and Swing.
 
 ## TODO
 
-1. Fix bug with complete lines not located at bottom of field.
+1. Fix it so that when lines are completed blocks move as far as they can down, not just
+one single line.

@@ -121,7 +121,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             if (isLine) {
                 lines.push(y);
                 for (int x = 0; x < COLUMNS; x++) {
-                    field[y][x].setInLine(isLine);
+                    field[y][x].setColor(Color.GREEN);
                 }
             }
         }
