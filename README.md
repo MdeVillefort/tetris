@@ -12,3 +12,4 @@ A simple clone of tetris using Java and Swing.
 
 1. Fix it so that when lines are completed blocks move as far as they can down, not just
 one single line.
+2. Multiple complete lines still not clearing correctly.

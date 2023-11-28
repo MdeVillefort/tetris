@@ -2,6 +2,7 @@ package assets;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Arrays;
 
 import static assets.Settings.*;
 
@@ -49,10 +50,11 @@ public class Block {
     }
     
 
-    public void move(int[] direction) {
-        position[0] += direction[0];
-        position[1] += direction[1];
-        setRectPosition();
+    public int[] move(int[] direction) {
+        int[] newPosition = Arrays.copyOf(position, position.length);
+        newPosition[0] += direction[0];
+        newPosition[1] += direction[1];
+        return newPosition;
     }
 
     public void draw(Graphics g) {

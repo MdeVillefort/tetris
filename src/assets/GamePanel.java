@@ -87,9 +87,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 for (int x = 0; x < COLUMNS; x++) {
                     Block block = field[y][x];
                     if (block != null) {
-                        block.move(MOVE_DIRECTIONS.get("down"));
-                        field[y+1][x] = block;
                         field[y][x] = null;
+                        int[] newPosition = block.move(MOVE_DIRECTIONS.get("down"));
+                        while (block.fits(newPosition)) {
+                            block.setPosition(newPosition);
+                            newPosition = block.move(MOVE_DIRECTIONS.get("down"));
+                        }
+                        field[block.getPosition()[1]][block.getPosition()[0]] = block;
                     }
                 }
             }
@@ -112,6 +116,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                                   .map(pos -> pos[1])
                                   .filter(y -> y >= 0)
                                   .distinct()
+                                  .sorted()
                                   .toArray(Integer[]::new);
 
         for (Integer yValue : yValues) {
