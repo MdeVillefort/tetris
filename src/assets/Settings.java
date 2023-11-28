@@ -7,7 +7,7 @@ public final class Settings {
 
     private Settings() {}
 
-    public static final int TILE_SIZE = 50;
+    public static final int TILE_SIZE = 30;
     public static final int ROWS = 20;
     public static final int COLUMNS = 10;
     public static final int DELAY = 16; // ms

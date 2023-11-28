@@ -76,6 +76,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         // Remove any full lines
         // Move blocks above down as needed
 
+        boolean linesToClear = !lines.isEmpty();
+
         while (!lines.isEmpty()) {
             int line = lines.pop();
             for (int x = 0; x < COLUMNS; x++) {
@@ -95,9 +97,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         logger.fine("Curent Field Array: \n" + Arrays.deepToString(field));
 
+        if (linesToClear)
+            tetromino = new Tetromino(this);
+
     }
 
-    public void checkFullLines() {
+    public boolean checkFullLines() {
 
         // Show blocks in field that complete a line
         // Only check lines occupied by current tetromino
@@ -105,6 +110,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         int[][] blockPositions = tetromino.getBlockPositions();
         Integer[] yValues = Arrays.stream(blockPositions)
                                   .map(pos -> pos[1])
+                                  .filter(y -> y >= 0)
                                   .distinct()
                                   .toArray(Integer[]::new);
 
@@ -119,6 +125,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 }
             }
         }
+
+        return !lines.isEmpty();
 
     }
 
@@ -135,8 +143,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
-            checkFullLines();
-            tetromino = new Tetromino(this);
+            if(!checkFullLines()) {
+                tetromino = new Tetromino(this);
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-# Tetris Clone
+# Tetris
 
 A simple clone of tetris using Java and Swing.
 
@@ -10,5 +10,4 @@ A simple clone of tetris using Java and Swing.
 
 ## TODO
 
-1. Fix timing of complete lines being visually displayed and the next tetromino appearing.
-2. Fix bug with complete lines not located at bottom of field.
+1. Fix bug with complete lines not located at bottom of field.
