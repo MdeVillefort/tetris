@@ -1,4 +1,4 @@
-# Tetris
+# Tetris 🤣
 
 A simple clone of tetris using Java and Swing.
 
