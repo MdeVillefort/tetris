@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import java.util.logging.Logger;
 import java.util.Arrays;
 import java.util.ArrayDeque;
+import java.util.Comparator;
 
 import static assets.Settings.*;
 
@@ -84,10 +85,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         // Remove any full lines
         // Move blocks above down as needed
 
-        boolean linesToClear = !lines.isEmpty();
+        boolean linesCleared = !lines.isEmpty();
 
         while (!lines.isEmpty()) {
             int line = lines.pop();
+            logger.fine("Clearing row " + line);
             for (int x = 0; x < COLUMNS; x++) {
                 field[line][x] = null;
             }
@@ -107,9 +109,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        logger.fine("Curent Field Array: \n" + Arrays.deepToString(field));
+        logger.finer("Curent Field Array: \n" + Arrays.deepToString(field));
 
-        if (linesToClear)
+        if (linesCleared)
             tetromino = new Tetromino(this);
 
     }
@@ -124,14 +126,19 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                                   .map(pos -> pos[1])
                                   .filter(y -> y >= 0)
                                   .distinct()
-                                  .sorted()
+                                  .sorted(Comparator.reverseOrder())
                                   .toArray(Integer[]::new);
+
+        logger.fine("Sorted and unqiue y positions for tetromino: " + 
+                    Arrays.toString(yValues));
 
         for (Integer yValue : yValues) {
             int y = yValue.intValue();
             boolean isLine = Arrays.stream(field[y])
-                                   .allMatch(p -> p != null);
+                                   .allMatch(block -> block != null);
+
             if (isLine) {
+                logger.fine("Row " + y + " is a full line.");
                 lines.push(y);
                 for (int x = 0; x < COLUMNS; x++) {
                     field[y][x].setColor(Color.GREEN);
@@ -154,8 +161,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                     field[pos[1]][pos[0]] = block;
                 }
             }
+
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
+
             if(!checkFullLines()) {
                 tetromino = new Tetromino(this);
             }
