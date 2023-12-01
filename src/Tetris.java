@@ -3,7 +3,12 @@ import assets.GamePanel;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+
 import java.util.logging.Logger;
+
+import static assets.Settings.*;
 
 public class Tetris {
 
@@ -12,15 +17,18 @@ public class Tetris {
     private static void initWindow() {
         
         JFrame window = new JFrame("Tetris");
-        
+        GamePanel panel = new GamePanel(window);
+
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        GamePanel panel = new GamePanel(window);
+        // window.setLayout(new FlowLayout());
+
         window.add(panel);
         window.addKeyListener(panel);
 
-        window.setResizable(false);
         window.pack();
+
+        window.setResizable(false);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 

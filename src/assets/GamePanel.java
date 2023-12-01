@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 
 import java.util.logging.Logger;
 import java.util.Arrays;
@@ -28,12 +29,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Block[][] field = new Block[ROWS][COLUMNS];
     private ArrayDeque<Integer> lines = new ArrayDeque<>();
     private long lastFrameTime = System.nanoTime();
+    private boolean isPaused = false;
 
     public GamePanel(JFrame window) {
 
+        setBorder(new EmptyBorder(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE));
         setPreferredSize(new Dimension(TILE_SIZE * COLUMNS,
                                        TILE_SIZE * ROWS));
-        setBackground(new Color(100, 100, 100));
+        setBackground(new Color(10, 10, 10));
 
         this.window = window;
 
@@ -45,9 +48,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         return field;
     }
 
+    public boolean paused() {
+        return isPaused;
+    }
+
     public void draw_grid(Graphics g) {
 
-            g.setColor(Color.BLACK);
+            g.setColor(Color.GRAY);
 
             for (int i = 0; i < COLUMNS; i++) {
                 for (int j = 0; j < ROWS; j++) {
@@ -58,11 +65,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public void update() {
 
-        // Check if ready to update tetromino vertical paaaosition
+        // Check if ready to update tetromino vertical position
         long currentTime = System.nanoTime();
         long extraTime = lines.isEmpty() ? 0 : 250_000_000;
 
-        if ((currentTime - lastFrameTime) > ANIM_TIME_INTERVAL + extraTime) {
+        if (!isPaused && 
+           (currentTime - lastFrameTime) > ANIM_TIME_INTERVAL + extraTime) {
             clearFullLines();
             tetromino.update();
             checkTetrominoLanding();
@@ -193,6 +201,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
         if (key == KeyEvent.VK_SPACE) {
             tetromino.rotate();
+        }
+        if (key == KeyEvent.VK_P) {
+            isPaused = !isPaused;
         }
         if (key == KeyEvent.VK_ESCAPE) {
             this.window.dispose();
