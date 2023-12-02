@@ -1,12 +1,19 @@
 import assets.GamePanel;
 
 import javax.swing.JFrame;
+import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static assets.Settings.*;
 
@@ -17,7 +24,8 @@ public class Tetris {
     private static void initWindow() {
         
         JFrame window = new JFrame("Tetris");
-        GamePanel panel = new GamePanel(window);
+        BufferedImage[] sprites = loadSprites();
+        GamePanel panel = new GamePanel(window, sprites);
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -32,6 +40,34 @@ public class Tetris {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
+    }
+
+    private static BufferedImage[] loadSprites() {
+        // String[] spriteFiles = new File(Tetris.class.getResource("resources/sprites").getPath()).list();
+        String[] spriteFiles = Stream.of(new File(Tetris.class.getResource("resources/sprites").getPath()).listFiles())
+                                     .filter(file -> !file.isDirectory())
+                                     .map(File::getAbsolutePath)
+                                     .toArray(String[]::new);
+        BufferedImage[] sprites = new BufferedImage[spriteFiles.length];
+        if (spriteFiles != null) {
+            for (int i = 0; i < spriteFiles.length; i++) {
+                try {
+                    // I have no idea what I'm doing.
+                    // https://stackoverflow.com/questions/4216123/how-to-scale-a-bufferedimage
+                    BufferedImage image = ImageIO.read(new File(spriteFiles[i]));
+                    BufferedImage resized = new BufferedImage(TILE_SIZE, TILE_SIZE, image.getType());
+                    Graphics2D g = resized.createGraphics();
+                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                       RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    g.drawImage(image, 0, 0, TILE_SIZE, TILE_SIZE, 0, 0, image.getWidth(), image.getHeight(), null);
+                    g.dispose();
+                    sprites[i] = resized;
+                } catch (IOException e) {
+                    logger.warning("Error opening image file: " + e.getMessage());
+                }
+            }
+        }
+        return sprites;
     }
     public static void main(String[] args) throws Exception {
 

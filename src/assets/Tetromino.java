@@ -2,7 +2,7 @@ package assets;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
+import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -12,16 +12,18 @@ import static assets.Settings.*;
 public class Tetromino {
 
     private static final Logger logger = Logger.getLogger("assets.Tetromiono");
+    private static final Color DEFAULT_COLOR = Color.RED;
 
     private GamePanel panel;
     private Shape shape;
+    private BufferedImage sprite;
     private Block[] blocks = new Block[4];
-    private Color color = Color.RED;
     private boolean isLanded = false;
 
-    public Tetromino(GamePanel panel, Shape shape) {
+    public Tetromino(GamePanel panel, Shape shape, BufferedImage sprite) {
         this.panel = panel;
         this.shape = shape;
+        this.sprite = sprite;
         int[][] coordinates = this.shape.getCoordinates();
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = new Block(this, coordinates[i]);
@@ -31,11 +33,17 @@ public class Tetromino {
     }
 
     public Tetromino(GamePanel panel) {
-        this(panel, Shape.randomShape());
+        this(panel,
+             Shape.randomShape(),
+             panel.getSprites()[(int)System.currentTimeMillis() % panel.getSprites().length]);
     }
 
     public Shape getShape() {
         return shape;
+    }
+
+    public BufferedImage getSprite() {
+        return sprite;
     }
 
     public Block[] getBlocks() {
@@ -50,14 +58,6 @@ public class Tetromino {
         return blockPositions;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public GamePanel getPanel() {
         return panel;
     }
@@ -67,8 +67,6 @@ public class Tetromino {
     }
 
     public void draw(Graphics g) {
-
-        g.setColor(color);
 
         for (Block block : blocks) {
             block.draw(g);

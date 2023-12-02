@@ -11,7 +11,7 @@ public class Block {
     private Tetromino tetromino;
     private int[] position = new int[2];
     private int[] topLeftCoordsPixels = new int[2];
-    private Color color = Color.RED;
+    private boolean isAlive = true;
 
     public Block(Tetromino tetromino, int[] position) {
         this.tetromino = tetromino;
@@ -37,18 +37,17 @@ public class Block {
         topLeftCoordsPixels[1] = position[1] * TILE_SIZE;
     }
 
-    public Color getColor() {
-        return color;
+    public boolean alive() {
+        return isAlive;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void kill() {
+        isAlive = false;
     }
 
     public void update() {
         setRectPosition();
     }
-    
 
     public int[] move(int[] direction) {
         int[] newPosition = Arrays.copyOf(position, position.length);
@@ -58,10 +57,19 @@ public class Block {
     }
 
     public void draw(Graphics g) {
-        g.setColor(color);
-        g.fillRoundRect(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
-                        TILE_SIZE, TILE_SIZE,
-                        16, 16);
+        g.drawImage(
+            tetromino.getSprite(),
+            topLeftCoordsPixels[0],
+            topLeftCoordsPixels[1],
+            tetromino.getPanel()
+        );
+        if (!isAlive) {
+            g.setColor(Color.BLACK);
+            g.drawLine(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
+                       topLeftCoordsPixels[0] + TILE_SIZE, topLeftCoordsPixels[1] + TILE_SIZE);
+            g.drawLine(topLeftCoordsPixels[0] + TILE_SIZE, topLeftCoordsPixels[1],
+                       topLeftCoordsPixels[0], topLeftCoordsPixels[1] + TILE_SIZE);
+        }
     }
 
     public boolean fits(int[] newPosition) {

@@ -2,6 +2,7 @@ package assets;
 
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.Color;
@@ -25,14 +26,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private static final Logger logger = Logger.getLogger("assets.GamePanel");
 
     private JFrame window;
+    private BufferedImage[] sprites;
     private Timer timer;
-    private Tetromino tetromino = new Tetromino(this);
+    private Tetromino tetromino;
     private Block[][] field = new Block[ROWS][COLUMNS];
     private ArrayDeque<Integer> lines = new ArrayDeque<>();
     private long lastFrameTime = System.nanoTime();
     private boolean isPaused = false;
 
-    public GamePanel(JFrame window) {
+    public GamePanel(JFrame window, BufferedImage[] sprites) {
 
         setBorder(new EmptyBorder(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE));
         setPreferredSize(new Dimension(TILE_SIZE * COLUMNS,
@@ -40,6 +42,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         setBackground(new Color(10, 10, 10));
 
         this.window = window;
+        this.sprites = sprites;
+        this.tetromino = new Tetromino(this);
 
         this.timer = new Timer(DELAY, this);
         this.timer.start();
@@ -47,6 +51,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
     public Block[][] getField() {
         return field;
+    }
+
+    public BufferedImage[] getSprites() {
+        return sprites;
     }
 
     public boolean paused() {
@@ -141,7 +149,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 logger.fine("Row " + y + " is a full line.");
                 lines.push(y);
                 for (int x = 0; x < COLUMNS; x++) {
-                    field[y][x].setColor(Color.GREEN);
+                    field[y][x].kill();
                 }
             }
         }
@@ -207,6 +215,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
         if (key == KeyEvent.VK_D) {
             tetromino.move("right");
+        }
+        if (key == KeyEvent.VK_S) {
+            tetromino.move("down");
         }
         if (key == KeyEvent.VK_SPACE) {
             tetromino.rotate();
