@@ -10,6 +10,7 @@ public final class Settings {
     public static final int TILE_SIZE = 30;
     public static final int ROWS = 20;
     public static final int COLUMNS = 10;
+    public static final int MENU_WIDTH = 8;
     public static final int DELAY = 16; // ms
     public static final int ANIM_TIME_INTERVAL = 250_000_000; // ns
     public static final int WIDTH = 4;

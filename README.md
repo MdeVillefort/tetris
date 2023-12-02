@@ -10,3 +10,5 @@ A simple clone of tetris using Java and Swing.
 
 ## TODO
 
+1. Bug where when full lines are cleared the blocks fall as far as possible and can make
+a new full line which is not cleared.

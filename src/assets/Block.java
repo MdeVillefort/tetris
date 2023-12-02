@@ -61,7 +61,7 @@ public class Block {
             tetromino.getSprite(),
             topLeftCoordsPixels[0],
             topLeftCoordsPixels[1],
-            tetromino.getPanel()
+            tetromino.getGameField()
         );
         if (!isAlive) {
             g.setColor(Color.BLACK);
@@ -76,7 +76,7 @@ public class Block {
         int x = newPosition[0];
         int y = newPosition[1];
         if ((0 <= x && x < COLUMNS && y < ROWS) &&
-            (y < 0 || tetromino.getPanel().getField()[y][x] == null)) {
+            (y < 0 || tetromino.getGameField().getField()[y][x] == null)) {
             return true;
         }
         return false;

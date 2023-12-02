@@ -11,17 +11,17 @@ import static assets.Settings.*;
 
 public class Tetromino {
 
-    private static final Logger logger = Logger.getLogger("assets.Tetromiono");
+    private static final Logger logger = Logger.getLogger("assets.Tetromino");
     private static final Color DEFAULT_COLOR = Color.RED;
 
-    private GamePanel panel;
+    private GameField gameField;
     private Shape shape;
     private BufferedImage sprite;
     private Block[] blocks = new Block[4];
     private boolean isLanded = false;
 
-    public Tetromino(GamePanel panel, Shape shape, BufferedImage sprite) {
-        this.panel = panel;
+    public Tetromino(GameField gameField, Shape shape, BufferedImage sprite) {
+        this.gameField = gameField;
         this.shape = shape;
         this.sprite = sprite;
         int[][] coordinates = this.shape.getCoordinates();
@@ -32,10 +32,10 @@ public class Tetromino {
                     " tetromino created at " + Arrays.deepToString(getBlockPositions()));
     }
 
-    public Tetromino(GamePanel panel) {
-        this(panel,
+    public Tetromino(GameField gameField) {
+        this(gameField,
              Shape.randomShape(),
-             panel.getSprites()[(int)System.currentTimeMillis() % panel.getSprites().length]);
+             gameField.getSprites()[(int)System.currentTimeMillis() % gameField.getSprites().length]);
     }
 
     public Shape getShape() {
@@ -58,8 +58,8 @@ public class Tetromino {
         return blockPositions;
     }
 
-    public GamePanel getPanel() {
-        return panel;
+    public GameField getGameField() {
+        return gameField;
     }
 
     public boolean landed() {

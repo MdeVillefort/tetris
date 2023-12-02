@@ -1,10 +1,10 @@
-import assets.GamePanel;
+import assets.GameField;
+import assets.GameMenu;
 
 import javax.swing.JFrame;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -25,14 +25,16 @@ public class Tetris {
         
         JFrame window = new JFrame("Tetris");
         BufferedImage[] sprites = loadSprites();
-        GamePanel panel = new GamePanel(window, sprites);
+        GameMenu menu = new GameMenu(window);
+        GameField field = new GameField(window, sprites);
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // window.setLayout(new FlowLayout());
+        window.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
-        window.add(panel);
-        window.addKeyListener(panel);
+        window.add(field);
+        window.addKeyListener(field);
+        window.add(menu);
 
         window.pack();
 

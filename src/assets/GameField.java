@@ -12,7 +12,6 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 
 import java.util.logging.Logger;
 import java.util.Arrays;
@@ -21,9 +20,9 @@ import java.util.Comparator;
 
 import static assets.Settings.*;
 
-public class GamePanel extends JPanel implements ActionListener, KeyListener {
+public class GameField extends JPanel implements ActionListener, KeyListener {
 
-    private static final Logger logger = Logger.getLogger("assets.GamePanel");
+    private static final Logger logger = Logger.getLogger("assets.GameField");
 
     private JFrame window;
     private BufferedImage[] sprites;
@@ -34,9 +33,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private long lastFrameTime = System.nanoTime();
     private boolean isPaused = false;
 
-    public GamePanel(JFrame window, BufferedImage[] sprites) {
+    public GameField(JFrame window, BufferedImage[] sprites) {
 
-        setBorder(new EmptyBorder(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE));
         setPreferredSize(new Dimension(TILE_SIZE * COLUMNS,
                                        TILE_SIZE * ROWS));
         setBackground(new Color(10, 10, 10));
