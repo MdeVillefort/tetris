@@ -1,5 +1,4 @@
 import assets.GameField;
-import assets.GameMenu;
 
 import javax.swing.JFrame;
 import javax.imageio.ImageIO;
@@ -24,17 +23,16 @@ public class Tetris {
     private static void initWindow() {
         
         JFrame window = new JFrame("Tetris");
-        BufferedImage[] sprites = loadSprites();
-        GameMenu menu = new GameMenu(window);
-        GameField field = new GameField(window, sprites);
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         window.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
-        window.add(field);
+        BufferedImage[] sprites = loadSprites();
+        GameField field = new GameField(window, sprites);
+
         window.addKeyListener(field);
-        window.add(menu);
+
+        window.add(field);
 
         window.pack();
 
@@ -45,7 +43,6 @@ public class Tetris {
     }
 
     private static BufferedImage[] loadSprites() {
-        // String[] spriteFiles = new File(Tetris.class.getResource("resources/sprites").getPath()).list();
         String[] spriteFiles = Stream.of(new File(Tetris.class.getResource("resources/sprites").getPath()).listFiles())
                                      .filter(file -> !file.isDirectory())
                                      .map(File::getAbsolutePath)

@@ -1,7 +1,9 @@
 package assets;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Arrays;
 
 import static assets.Settings.*;
@@ -15,14 +17,19 @@ public class Block {
 
     public Block(Tetromino tetromino, int[] position) {
         this.tetromino = tetromino;
-        position[0] += INIT_POS_OFFSET[0];
-        position[1] += INIT_POS_OFFSET[1];
+        if (tetromino.current()) {
+            position[0] += INIT_POS_OFFSET[0];
+            position[1] += INIT_POS_OFFSET[1];
+        } else {
+            position[0] += NEXT_POS_OFFSET[0];
+            position[1] += NEXT_POS_OFFSET[1];
+        }
         this.position = position;
-        update();
+        setRectPosition();
     }
 
     public int[] getPosition() {
-        return position;
+        return Arrays.copyOf(position, position.length);
     }
 
     public void setPosition(int[] newPosition) {
@@ -45,10 +52,6 @@ public class Block {
         isAlive = false;
     }
 
-    public void update() {
-        setRectPosition();
-    }
-
     public int[] move(int[] direction) {
         int[] newPosition = Arrays.copyOf(position, position.length);
         newPosition[0] += direction[0];
@@ -57,17 +60,19 @@ public class Block {
     }
 
     public void draw(Graphics g) {
-        g.drawImage(
+        Graphics2D g2 = (Graphics2D)g;
+        g2.drawImage(
             tetromino.getSprite(),
             topLeftCoordsPixels[0],
             topLeftCoordsPixels[1],
             tetromino.getGameField()
         );
         if (!isAlive) {
-            g.setColor(Color.BLACK);
-            g.drawLine(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(2f));
+            g2.drawLine(topLeftCoordsPixels[0], topLeftCoordsPixels[1],
                        topLeftCoordsPixels[0] + TILE_SIZE, topLeftCoordsPixels[1] + TILE_SIZE);
-            g.drawLine(topLeftCoordsPixels[0] + TILE_SIZE, topLeftCoordsPixels[1],
+            g2.drawLine(topLeftCoordsPixels[0] + TILE_SIZE, topLeftCoordsPixels[1],
                        topLeftCoordsPixels[0], topLeftCoordsPixels[1] + TILE_SIZE);
         }
     }

@@ -1,6 +1,5 @@
 package assets;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -12,18 +11,19 @@ import static assets.Settings.*;
 public class Tetromino {
 
     private static final Logger logger = Logger.getLogger("assets.Tetromino");
-    private static final Color DEFAULT_COLOR = Color.RED;
 
     private GameField gameField;
     private Shape shape;
     private BufferedImage sprite;
     private Block[] blocks = new Block[4];
     private boolean isLanded = false;
+    private boolean isCurrent = false;
 
-    public Tetromino(GameField gameField, Shape shape, BufferedImage sprite) {
+    public Tetromino(GameField gameField, Shape shape, BufferedImage sprite, boolean isCurrent) {
         this.gameField = gameField;
         this.shape = shape;
         this.sprite = sprite;
+        this.isCurrent = isCurrent;
         int[][] coordinates = this.shape.getCoordinates();
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = new Block(this, coordinates[i]);
@@ -32,10 +32,11 @@ public class Tetromino {
                     " tetromino created at " + Arrays.deepToString(getBlockPositions()));
     }
 
-    public Tetromino(GameField gameField) {
+    public Tetromino(GameField gameField, boolean isCurrent) {
         this(gameField,
              Shape.randomShape(),
-             gameField.getSprites()[(int)System.currentTimeMillis() % gameField.getSprites().length]);
+             gameField.getSprites()[(int)System.currentTimeMillis() % gameField.getSprites().length],
+             isCurrent);
     }
 
     public Shape getShape() {
@@ -64,6 +65,25 @@ public class Tetromino {
 
     public boolean landed() {
         return isLanded;
+    }
+
+    public boolean current() {
+        return isCurrent;
+    }
+
+    public void setCurrent(boolean isCurrent) {
+        this.isCurrent = isCurrent;
+        int[][] coordinates = this.shape.getCoordinates();
+        for (int i = 0; i < blocks.length; i++) {
+            int[] initPosition = coordinates[i];
+            for (int j = 0; j < initPosition.length; j++) {
+                if (isCurrent)
+                    initPosition[j] += INIT_POS_OFFSET[j];
+                else
+                    initPosition[j] += NEXT_POS_OFFSET[j];
+            }
+            blocks[i].setPosition(initPosition);
+        }
     }
 
     public void draw(Graphics g) {

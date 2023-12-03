@@ -15,6 +15,7 @@ public final class Settings {
     public static final int ANIM_TIME_INTERVAL = 250_000_000; // ns
     public static final int WIDTH = 4;
     public static final int[] INIT_POS_OFFSET = {COLUMNS / 2, 0};
+    public static final int[] NEXT_POS_OFFSET = {COLUMNS + MENU_WIDTH / 2, 15};
     public static final Map<String, int[]> MOVE_DIRECTIONS;
 
     static {

@@ -28,6 +28,7 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
     private BufferedImage[] sprites;
     private Timer timer;
     private Tetromino tetromino;
+    private Tetromino nextTetromino;
     private Block[][] field = new Block[ROWS][COLUMNS];
     private ArrayDeque<Integer> lines = new ArrayDeque<>();
     private long lastFrameTime = System.nanoTime();
@@ -35,13 +36,14 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
 
     public GameField(JFrame window, BufferedImage[] sprites) {
 
-        setPreferredSize(new Dimension(TILE_SIZE * COLUMNS,
-                                       TILE_SIZE * ROWS));
+        setPreferredSize(new Dimension(TILE_SIZE * (COLUMNS + MENU_WIDTH),
+                                       TILE_SIZE * ROWS + 1));
         setBackground(new Color(10, 10, 10));
 
         this.window = window;
         this.sprites = sprites;
-        this.tetromino = new Tetromino(this);
+        this.tetromino = new Tetromino(this, true);
+        this.nextTetromino = new Tetromino(this, false);
 
         this.timer = new Timer(DELAY, this);
         this.timer.start();
@@ -61,13 +63,13 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
 
     public void draw_grid(Graphics g) {
 
-            g.setColor(Color.GRAY);
+        g.setColor(Color.GRAY);
 
-            for (int i = 0; i < COLUMNS; i++) {
-                for (int j = 0; j < ROWS; j++) {
-                    g.drawRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
+        for (int i = 0; i < COLUMNS; i++) {
+            for (int j = 0; j < ROWS; j++) {
+                g.drawRect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
+        }
     }
 
     public void update() {
@@ -117,9 +119,11 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
 
         logger.finer("Curent Field Array: \n" + Arrays.deepToString(field));
 
-        if (linesCleared)
-            tetromino = new Tetromino(this);
-
+        if (linesCleared) {
+            nextTetromino.setCurrent(true);
+            tetromino = nextTetromino;
+            nextTetromino = new Tetromino(this, false);
+        }
     }
 
     public boolean checkFullLines() {
@@ -172,7 +176,9 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
                         Arrays.deepToString(tetromino.getBlockPositions()));
 
             if(!checkFullLines()) {
-                tetromino = new Tetromino(this);
+                nextTetromino.setCurrent(true);
+                tetromino = nextTetromino;
+                nextTetromino = new Tetromino(this, false);
             }
         }
     }
@@ -189,6 +195,7 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
 
         draw_grid(g);
         tetromino.draw(g);
+        nextTetromino.draw(g);
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
