@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import java.util.Arrays;
 import java.util.ArrayDeque;
 import java.util.Comparator;
@@ -61,7 +62,7 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
         return isPaused;
     }
 
-    public void draw_grid(Graphics g) {
+    public void drawGrid(Graphics g) {
 
         g.setColor(Color.GRAY);
 
@@ -88,12 +89,16 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
 
     }
 
-    public void clearFullLines() {
+    public void createNewTetromino() {
+        nextTetromino.setCurrent(true);
+        tetromino = nextTetromino;
+        nextTetromino = new Tetromino(this, false);
+    }
+
+    public boolean clearFullLines() {
 
         // Remove any full lines
-        // Move blocks above down as needed
-
-        boolean linesCleared = !lines.isEmpty();
+        // Move blocks above down as far as possible
 
         while (!lines.isEmpty()) {
             int line = lines.pop();
@@ -117,30 +122,39 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
             }
         }
 
+        // Check if gravity created more full lines
+        checkFullLines(true);
+
+        boolean allClear = !lines.isEmpty();
+
+        if (allClear)
+            createNewTetromino();
+
         logger.finer("Curent Field Array: \n" + Arrays.deepToString(field));
 
-        if (linesCleared) {
-            nextTetromino.setCurrent(true);
-            tetromino = nextTetromino;
-            nextTetromino = new Tetromino(this, false);
-        }
+        return allClear;
     }
 
-    public boolean checkFullLines() {
+    public boolean checkFullLines(boolean checkAllLines) {
 
-        // Show blocks in field that complete a line
-        // Only check lines occupied by current tetromino
+        Integer[] yValues;
 
-        int[][] blockPositions = tetromino.getBlockPositions();
-        Integer[] yValues = Arrays.stream(blockPositions)
-                                  .map(pos -> pos[1])
-                                  .filter(y -> y >= 0)
-                                  .distinct()
-                                  .sorted(Comparator.reverseOrder())
-                                  .toArray(Integer[]::new);
-
-        logger.fine("Sorted and unqiue y positions for tetromino: " + 
-                    Arrays.toString(yValues));
+        if (!checkAllLines) {
+            int[][] blockPositions = tetromino.getBlockPositions();
+            yValues = Arrays.stream(blockPositions)
+                            .map(pos -> pos[1])
+                            .filter(y -> y >= 0)
+                            .distinct()
+                            .sorted(Comparator.reverseOrder())
+                            .toArray(Integer[]::new);
+            logger.fine("Sorted and unqiue y positions for tetromino: " + 
+                         Arrays.toString(yValues));
+        } else {
+            yValues = IntStream.range(0, ROWS)
+                               .boxed()
+                               .sorted(Comparator.reverseOrder())
+                               .toArray(Integer[]::new);
+        }
 
         for (Integer yValue : yValues) {
             int y = yValue.intValue();
@@ -175,11 +189,8 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
 
-            if(!checkFullLines()) {
-                nextTetromino.setCurrent(true);
-                tetromino = nextTetromino;
-                nextTetromino = new Tetromino(this, false);
-            }
+            if (!checkFullLines(false))
+                createNewTetromino();
         }
     }
 
@@ -193,7 +204,7 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        draw_grid(g);
+        drawGrid(g);
         tetromino.draw(g);
         nextTetromino.draw(g);
 
