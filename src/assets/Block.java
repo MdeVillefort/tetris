@@ -4,27 +4,25 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
+
 
 import static assets.Settings.*;
 
 public class Block {
     
-    private Tetromino tetromino;
-    private int[] position = new int[2];
-    private int[] topLeftCoordsPixels = new int[2];
+
+    private GameField gameField;
+    private BufferedImage sprite;
+    private int[] position = new int[2];            // block position in game field cell coordinates
+    private int[] topLeftCoordsPixels = new int[2]; // block position in game field pixel coordinates
     private boolean isAlive = true;
 
-    public Block(Tetromino tetromino, int[] position) {
-        this.tetromino = tetromino;
-        if (tetromino.current()) {
-            position[0] += INIT_POS_OFFSET[0];
-            position[1] += INIT_POS_OFFSET[1];
-        } else {
-            position[0] += NEXT_POS_OFFSET[0];
-            position[1] += NEXT_POS_OFFSET[1];
-        }
+    public Block(GameField gameField, int[] position, BufferedImage sprite) {
+        this.gameField = gameField;
         this.position = position;
+        this.sprite = sprite;
         setRectPosition();
     }
 
@@ -62,10 +60,10 @@ public class Block {
     public void draw(Graphics g) {
         Graphics2D g2 = (Graphics2D)g;
         g2.drawImage(
-            tetromino.getSprite(),
+            sprite,
             topLeftCoordsPixels[0],
             topLeftCoordsPixels[1],
-            tetromino.getGameField()
+            gameField
         );
         if (!isAlive) {
             g2.setColor(Color.BLACK);
@@ -80,10 +78,13 @@ public class Block {
     public boolean fits(int[] newPosition) {
         int x = newPosition[0];
         int y = newPosition[1];
+
+        // Must be within game field or above it AND no blocks exist in new position
         if ((0 <= x && x < COLUMNS && y < ROWS) &&
-            (y < 0 || tetromino.getGameField().getField()[y][x] == null)) {
+            (y < 0 || gameField.getField()[y][x] == null)) {
             return true;
         }
+
         return false;
     }
 

@@ -14,7 +14,6 @@ public class Tetromino {
 
     private GameField gameField;
     private Shape shape;
-    private BufferedImage sprite;
     private Block[] blocks = new Block[4];
     private boolean isLanded = false;
     private boolean isCurrent = false;
@@ -22,12 +21,12 @@ public class Tetromino {
     public Tetromino(GameField gameField, Shape shape, BufferedImage sprite, boolean isCurrent) {
         this.gameField = gameField;
         this.shape = shape;
-        this.sprite = sprite;
         this.isCurrent = isCurrent;
         int[][] coordinates = this.shape.getCoordinates();
         for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = new Block(this, coordinates[i]);
+            blocks[i] = new Block(getGameField(), coordinates[i], sprite);
         }
+        setCurrent(isCurrent);
         logger.fine("New " + this.shape.name() +
                     " tetromino created at " + Arrays.deepToString(getBlockPositions()));
     }
@@ -35,16 +34,12 @@ public class Tetromino {
     public Tetromino(GameField gameField, boolean isCurrent) {
         this(gameField,
              Shape.randomShape(),
-             gameField.getSprites()[(int)System.currentTimeMillis() % gameField.getSprites().length],
+             gameField.getRandomSprite(),
              isCurrent);
     }
 
     public Shape getShape() {
         return shape;
-    }
-
-    public BufferedImage getSprite() {
-        return sprite;
     }
 
     public Block[] getBlocks() {

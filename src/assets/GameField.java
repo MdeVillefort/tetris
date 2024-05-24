@@ -23,6 +23,7 @@ import static assets.Settings.*;
 
 public class GameField extends JPanel implements ActionListener, KeyListener {
 
+
     private static final Logger logger = Logger.getLogger("assets.GameField");
 
     private JFrame window;
@@ -58,6 +59,10 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
         return sprites;
     }
 
+    public BufferedImage getRandomSprite() {
+        return getSprites()[(int)(System.currentTimeMillis() % getSprites().length)];
+    }
+
     public boolean paused() {
         return isPaused;
     }
@@ -81,9 +86,10 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
 
         if (!isPaused && 
            (currentTime - lastFrameTime) > ANIM_TIME_INTERVAL + extraTime) {
-            clearFullLines();
             tetromino.update();
             checkTetrominoLanding();
+            clearFullLines();
+            checkFullLines(true);
             lastFrameTime = currentTime;
         }
 
@@ -95,17 +101,16 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
         nextTetromino = new Tetromino(this, false);
     }
 
-    public boolean clearFullLines() {
+    public void clearFullLines() {
 
         // Remove any full lines
-        // Move blocks above down as far as possible
-
         while (!lines.isEmpty()) {
             int line = lines.pop();
             logger.fine("Clearing row " + line);
             for (int x = 0; x < COLUMNS; x++) {
                 field[line][x] = null;
             }
+            // Move blocks above cleared line down as much as possible
             for (int y = line - 1; y >= 0; y--) {
                 for (int x = 0; x < COLUMNS; x++) {
                     Block block = field[y][x];
@@ -122,24 +127,20 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        // Check if gravity created more full lines
-        checkFullLines(true);
-
-        boolean allClear = !lines.isEmpty();
-
-        if (allClear)
-            createNewTetromino();
-
         logger.finer("Curent Field Array: \n" + Arrays.deepToString(field));
 
-        return allClear;
     }
 
-    public boolean checkFullLines(boolean checkAllLines) {
+    public void checkFullLines(boolean checkAllLines) {
 
         Integer[] yValues;
 
-        if (!checkAllLines) {
+        if (checkAllLines) {
+            yValues = IntStream.range(0, ROWS)
+                               .boxed()
+                               .sorted(Comparator.reverseOrder())
+                               .toArray(Integer[]::new);
+        } else {
             int[][] blockPositions = tetromino.getBlockPositions();
             yValues = Arrays.stream(blockPositions)
                             .map(pos -> pos[1])
@@ -149,11 +150,6 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
                             .toArray(Integer[]::new);
             logger.fine("Sorted and unqiue y positions for tetromino: " + 
                          Arrays.toString(yValues));
-        } else {
-            yValues = IntStream.range(0, ROWS)
-                               .boxed()
-                               .sorted(Comparator.reverseOrder())
-                               .toArray(Integer[]::new);
         }
 
         for (Integer yValue : yValues) {
@@ -164,14 +160,8 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
             if (isLine) {
                 logger.fine("Row " + y + " is a full line.");
                 lines.push(y);
-                for (int x = 0; x < COLUMNS; x++) {
-                    field[y][x].kill();
-                }
             }
         }
-
-        return !lines.isEmpty();
-
     }
 
     public void checkTetrominoLanding() {
@@ -185,12 +175,10 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
                     field[pos[1]][pos[0]] = block;
                 }
             }
-
             logger.fine(tetromino.getShape().name() + " tetromino landed at " +
                         Arrays.deepToString(tetromino.getBlockPositions()));
-
-            if (!checkFullLines(false))
-                createNewTetromino();
+            checkFullLines(false);
+            createNewTetromino();
         }
     }
 
@@ -226,16 +214,16 @@ public class GameField extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_A) {
+        if (key == KeyEvent.VK_A && !isPaused) {
             tetromino.move("left");
         }
-        if (key == KeyEvent.VK_D) {
+        if (key == KeyEvent.VK_D && !isPaused) {
             tetromino.move("right");
         }
-        if (key == KeyEvent.VK_S) {
+        if (key == KeyEvent.VK_S && !isPaused) {
             tetromino.move("down");
         }
-        if (key == KeyEvent.VK_SPACE) {
+        if (key == KeyEvent.VK_SPACE && !isPaused) {
             tetromino.rotate();
         }
         if (key == KeyEvent.VK_P) {
