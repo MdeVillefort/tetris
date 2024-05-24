@@ -8,7 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -28,7 +29,8 @@ public class Tetris {
         window.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
         BufferedImage[] sprites = loadSprites();
-        GameField field = new GameField(window, sprites);
+        Font customFont = loadCustomFonts();
+        GameField field = new GameField(window, sprites, customFont);
 
         window.addKeyListener(field);
 
@@ -68,6 +70,18 @@ public class Tetris {
         }
         return sprites;
     }
+
+    private static Font loadCustomFonts() {
+        File fontFile = new File(Tetris.class.getResource("resources/font/FREAKSOFNATUREMASSIVE.ttf").getPath());
+        Font customFont = null;
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+        return customFont;
+    }
+
     public static void main(String[] args) throws Exception {
 
         // invokeLater() is used here to prevent our graphics processing from
