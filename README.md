@@ -2,6 +2,8 @@
 
 A simple clone of tetris using Java and Swing.
 
+Run with `java -jar tetris.jar`.
+
 ## Resources
 
 [Detailed Tetris Tutorial in Python](https://www.youtube.com/watch?v=RxWS5h1UfI4)

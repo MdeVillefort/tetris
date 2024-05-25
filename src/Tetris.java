@@ -10,10 +10,9 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 import static assets.Settings.*;
 
@@ -45,39 +44,39 @@ public class Tetris {
     }
 
     private static BufferedImage[] loadSprites() {
-        String[] spriteFiles = Stream.of(new File(Tetris.class.getResource("resources/sprites").getPath()).listFiles())
-                                     .filter(file -> !file.isDirectory())
-                                     .map(File::getAbsolutePath)
-                                     .toArray(String[]::new);
-        BufferedImage[] sprites = new BufferedImage[spriteFiles.length];
-        if (spriteFiles != null) {
-            for (int i = 0; i < spriteFiles.length; i++) {
-                try {
-                    // I have no idea what I'm doing.
-                    // https://stackoverflow.com/questions/4216123/how-to-scale-a-bufferedimage
-                    BufferedImage image = ImageIO.read(new File(spriteFiles[i]));
-                    BufferedImage resized = new BufferedImage(TILE_SIZE, TILE_SIZE, image.getType());
-                    Graphics2D g = resized.createGraphics();
-                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                       RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                    g.drawImage(image, 0, 0, TILE_SIZE, TILE_SIZE, 0, 0, image.getWidth(), image.getHeight(), null);
-                    g.dispose();
-                    sprites[i] = resized;
-                } catch (IOException e) {
-                    logger.warning("Error opening image file: " + e.getMessage());
-                }
+
+        /* 
+         * I hate this!  No easy way to make loading sprite files without some amount of
+         * hard coding so that code runs in both IDE and jar file.
+         * https://stackoverflow.com/questions/1429172/how-to-list-the-files-inside-a-jar-file
+         */
+        BufferedImage[] sprites = new BufferedImage[6];
+        try {
+            for (int i = 0; i <= 5; i++) {
+                // I have no idea what I'm doing.
+                // https://stackoverflow.com/questions/4216123/how-to-scale-a-bufferedimage
+                BufferedImage image = ImageIO.read(Tetris.class.getResourceAsStream("/resources/sprites/" + i + ".png"));
+                BufferedImage resized = new BufferedImage(TILE_SIZE, TILE_SIZE, image.getType());
+                Graphics2D g = resized.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                   RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g.drawImage(image, 0, 0, TILE_SIZE, TILE_SIZE, 0, 0, image.getWidth(), image.getHeight(), null);
+                g.dispose();
+                sprites[i] = resized;
             }
+        } catch (IOException e) {
+            logger.warning("Error opening image file: " + e.getMessage());
         }
         return sprites;
     }
 
     private static Font loadCustomFonts() {
-        File fontFile = new File(Tetris.class.getResource("resources/font/FREAKSOFNATUREMASSIVE.ttf").getPath());
+        InputStream fontInputStream = Tetris.class.getResourceAsStream("/resources/font/FREAKSOFNATUREMASSIVE.ttf");
         Font customFont = null;
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, fontInputStream);
         } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
+            logger.warning("Error opening font file: " + e.getMessage());
         }
         return customFont;
     }
